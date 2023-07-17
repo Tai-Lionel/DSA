@@ -16,12 +16,12 @@ class Node {
 class Stack {
     private: 
         Node* top;
-        int length;
+        int height;
     public:
         Stack(int value) {
             Node* newNode = new Node(value);
             top = newNode;
-            length = 1;
+            height = 1;
         }
         ~Stack() {
             while(top) {
@@ -40,22 +40,22 @@ class Stack {
         Node* getTop() {
             return top;
         }
-        int getLength() {
-            return length;
+        int getHeight() {
+            return height;
         }
         void push(int value) {
             Node* newNode = new Node(value);
             newNode->next = top;
             top = newNode;
-            length++;
+            height++;
         }
         int pop() {
-            if (length == 0) return INT_MIN;
+            if (height == 0) return INT_MIN;
             int poppedValue = top->value; 
             Node* temp = top;
             top = top->next;
             delete temp;
-            length--;
+            height--;
             return poppedValue;
         }
 };
