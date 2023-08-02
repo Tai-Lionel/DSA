@@ -1,6 +1,7 @@
 /* Khai bao thu vien */
 #include <iostream>
 #include <stdlib.h>
+#include <cmath>
 using namespace std;
 
 /* Khai bao cau truc */
@@ -23,6 +24,10 @@ void Nhap(LIST &L);
 void Xuat(LIST L);
 void XuatChan(LIST L);
 int TongChan(LIST L);
+NODE* TimMax(LIST L);
+bool LaSNT(int x);
+int DemSNT(LIST L);
+void ThemXTruocChanDau(LIST L);
 
 /* Ham main */
 int main() {
@@ -31,6 +36,8 @@ int main() {
     cout << "\nDanh sach vua nhap: "; Xuat(L);
     cout << "\nDanh sach chan: "; XuatChan(L);
     cout << "\nTong chan: " << TongChan(L);
+    cout << "\nGia tri lon nhat: " << TimMax(L)->Data;
+    cout << "\nSo luong so nguyen to: " << DemSNT(L);
     Huy(L);
     
 }
@@ -118,6 +125,7 @@ void XuatChan(LIST L) {
     }
 }
 
+// Tong chan
 int TongChan(LIST L) {
     int s = 0;
     NODE* p = L.pHead;
@@ -129,3 +137,41 @@ int TongChan(LIST L) {
     return s;
 }
 
+// Tim gia tri long nhat trong danh sach
+NODE* TimMax(LIST L) {
+    NODE* p = L.pHead;
+    NODE* maxNode = L.pHead;
+    while (p) {
+        if (p->Data > maxNode->Data)
+            maxNode = p;
+        p = p->pNext;
+    }
+    return maxNode;
+}
+
+// La so nguyen to hay khong
+bool LaSNT(int x) {
+    if (x < 2) return false;
+    if (x == 2) return true;
+    for (int i = 2; i <= (int)sqrt(x); i++) {
+        if (x % i == 0)
+            return false;
+    }
+    return true;
+}
+
+// Dem so nguyen to
+int DemSNT(LIST L) {
+    int primeNum = 0;
+    NODE* p = L.pHead;
+    while (p) {
+        if (LaSNT(p->Data))
+            primeNum++;
+        p = p->pNext;
+    }
+    return primeNum;
+}
+
+void ThemXTruocChanDau(LIST L) {
+    
+}
