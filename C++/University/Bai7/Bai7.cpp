@@ -27,7 +27,20 @@ int TongChan(LIST L);
 NODE* TimMax(LIST L);
 bool LaSNT(int x);
 int DemSNT(LIST L);
-void ThemXTruocChanDau(LIST L);
+NODE* TimChanDau(LIST L);
+void ThemNewNodeTruocp(LIST &L, NODE* newNode, NODE* p);
+void ThemXTruocChanDau(LIST &L, int X);
+NODE* TimLeCuoi(LIST L);
+void ThemXSauLeCuoi(LIST &L, int X);
+NODE* TimMin(LIST L);
+void XoaDau(LIST &L);
+void XoaCuoi(LIST &L);
+void XoaMin(LIST &L);
+NODE* findNodeByValue(LIST &L, int X);
+void removeNodeBeforeTarget(LIST &L, NODE* target);
+void removeNodeAfterTarget(LIST &L, NODE* target);
+void XoaTruocSau(LIST &L, int X);
+void Tach(LIST L, LIST &L1, LIST &L2);
 
 /* Ham main */
 int main() {
@@ -36,10 +49,14 @@ int main() {
     cout << "\nDanh sach vua nhap: "; Xuat(L);
     cout << "\nDanh sach chan: "; XuatChan(L);
     cout << "\nTong chan: " << TongChan(L);
-    cout << "\nGia tri lon nhat: " << TimMax(L)->Data;
+    if(TimMax(L)) cout << "\nGia tri lon nhat: " << TimMax(L)->Data; else cout << "\nGia tri lon nhat: ";
     cout << "\nSo luong so nguyen to: " << DemSNT(L);
-    Huy(L);
-    
+    int X; cout << "\nNhap gia tri muon them vao chan dau: "; cin >> X; ThemXTruocChanDau(L, X); cout << "Danh sach them gia tri vua nhap vao chan dau: "; Xuat(L);
+    cout << "\nNhap gia tri muon them vao le cuoi: "; cin >> X; ThemXSauLeCuoi(L, X); cout << "Danh sach sau khi them gia tri vua nhap vao le cuoi: "; Xuat(L);
+    XoaMin(L); cout << "\nDanh sach sau khi xoa gia tri nho nhat: "; Xuat(L);
+    cout << "\nNhap gia tri muon xoa truoc va sau: "; cin >> X; XoaTruocSau(L, X); cout << "Danh sach sau khi xoa truoc sau: "; Xuat(L);
+    LIST L1, L2; Tach(L, L1, L2); cout << "\nL1: "; Xuat(L1); cout << "\nL2: "; Xuat(L2);
+    Huy(L);    
 }
 
 /* Cai dat cac ham con */
@@ -172,6 +189,177 @@ int DemSNT(LIST L) {
     return primeNum;
 }
 
-void ThemXTruocChanDau(LIST L) {
-    
+// Tim Node co gia tri chan dau tien
+NODE* TimChanDau(LIST L) {
+    NODE* p = L.pHead;
+    while (p) {
+        if (p->Data % 2 == 0)
+            return p;
+        p = p->pNext;
+    }
+    return p;
+}
+
+void ThemNewNodeTruocp(LIST &L, NODE* newNode, NODE* p) {
+    if (L.pHead == L.pTail) ThemDau(L, newNode);
+    if (L.pHead == p) ThemDau(L, newNode);
+    if (L.pTail == p) ThemCuoi(L, newNode);
+    NODE* pre = NULL;
+    NODE* temp = L.pHead;
+    while (temp != p) {
+        pre = temp;
+        temp = temp->pNext;
+    }
+    pre->pNext = newNode;
+    newNode->pNext = temp;
+}
+
+void ThemXTruocChanDau(LIST &L, int X) {
+    NODE* p = TimChanDau(L);
+    NODE* newNode = TaoNode(X);
+    if (p == NULL) {
+        ThemDau(L, newNode);
+        cout << "p is null\n";
+    }
+    else 
+        ThemNewNodeTruocp(L, newNode, p);
+}
+
+NODE* TimLeCuoi(LIST L) {
+    NODE* leCuoi = NULL;
+    NODE* temp = L.pHead;
+    while (temp) {
+        if (temp->Data % 2 == 1)
+            leCuoi = temp;
+        temp = temp->pNext; 
+    }
+    return leCuoi;
+}
+
+void ThemXSauLeCuoi(LIST &L, int X) {
+    NODE* newNode = TaoNode(X);
+    NODE* p = TimLeCuoi(L);
+    if (p == NULL)
+        ThemCuoi(L, newNode);
+    else {
+        if (p == L.pTail) {
+            ThemCuoi(L, newNode);
+            return;
+        }
+        newNode->pNext = p->pNext;
+        p->pNext = newNode;
+    }
+}
+
+NODE* TimMin(LIST L) {
+    if (L.pHead == L.pTail)
+        return L.pHead;
+    NODE* minNode = L.pHead;
+    NODE* temp = L.pHead;
+    while (temp) {
+        if (temp->Data < minNode->Data)
+            minNode = temp;
+        temp = temp->pNext;
+    }
+    return minNode;
+}
+
+void XoaDau(LIST &L) {
+    if (L.pHead == L.pTail)
+        L.pHead = L.pTail = NULL;
+    else { 
+        NODE* temp = L.pHead;
+        L.pHead = L.pHead->pNext;
+        delete temp;
+    }
+}
+
+void XoaCuoi(LIST &L) {
+    if (L.pHead == L.pTail)
+        L.pHead = L.pTail = NULL;
+    else {
+        NODE* temp = L.pHead;
+        while (temp->pNext->pNext)
+            temp = temp->pNext;
+        L.pTail = temp;
+        delete L.pTail->pNext;
+        L.pTail->pNext = NULL;
+    }
+}
+
+void XoaMin(LIST &L) {
+    NODE* minNode = TimMin(L);
+    if (minNode == L.pHead) XoaDau(L);
+    else if (minNode == L.pTail) XoaCuoi(L);
+    else {
+        NODE* pre = NULL;
+        NODE* p = L.pHead;
+        while (p != minNode) {
+            pre = p;
+            p = p->pNext;
+        }
+        pre->pNext = p->pNext;
+        delete p;
+    }
+}
+
+NODE* findNodeByValue(LIST &L, int X) {
+    NODE* temp = L.pHead;
+    while (temp) {
+        if (temp->Data == X)
+            return temp;
+        temp = temp->pNext;
+    }
+    return temp;
+}
+
+void removeNodeBeforeTarget(LIST &L, NODE* target) {
+    if (L.pHead == nullptr || target == L.pHead) return;
+    NODE* prepre = nullptr;
+    NODE* pre = nullptr;
+    NODE* temp = L.pHead;
+    while (temp != target) {
+        prepre = pre;
+        pre = temp;
+        temp = temp->pNext;
+    }
+    if (pre == L.pHead)
+        XoaDau(L);
+    else {
+        prepre->pNext = target;
+        delete pre;
+    }
+}
+
+void removeNodeAfterTarget(LIST &L, NODE* target) {
+    if (L.pHead == nullptr || target == L.pTail) return;
+    if (target->pNext->pNext == nullptr) {
+        XoaCuoi(L);
+        return;
+    }
+    NODE* temp = L.pHead;
+    while (temp != target)
+        temp = temp->pNext;
+    NODE* aboutRemoved = temp->pNext;
+    temp->pNext = temp->pNext->pNext;
+    delete aboutRemoved;
+}
+
+void XoaTruocSau(LIST &L, int X) {
+    NODE* target = findNodeByValue(L, X);
+    if (target) {
+        removeNodeBeforeTarget(L, target);
+        removeNodeAfterTarget(L, target);
+    }
+}
+
+void Tach(LIST L, LIST &L1, LIST &L2) {
+    KhoiTao(L1); KhoiTao(L2);
+    NODE* temp = L.pHead;
+    while (temp) {
+        NODE* newNode = TaoNode(temp->Data);
+        if (LaSNT(temp->Data)) ThemCuoi(L1, newNode);
+        else ThemCuoi(L2, newNode);
+        temp = temp->pNext;
+    }
 }
